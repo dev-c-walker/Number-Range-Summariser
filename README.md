@@ -1,1 +1,1 @@
-# Number-Range-Summariser
+# number-range-summarizer
