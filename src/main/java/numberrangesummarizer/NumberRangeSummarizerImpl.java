@@ -27,6 +27,7 @@ public class NumberRangeSummarizerImpl implements NumberRangeSummarizer {
     *
     * @param input Raw comma-separated string 
     * @return Collection of parsed Integer values or empty list if input is empty/null
+    * @throws IllegalArgumentException if any token is not a valid integer
     */
    @Override
    public Collection<Integer> collect(String input){
@@ -39,9 +40,22 @@ public class NumberRangeSummarizerImpl implements NumberRangeSummarizer {
       return Arrays.stream(input.split(COMMA_DELIMITER)) // split into string tokens and convert to stream
                    .map(String::trim) // remove leading or trailing spaces 
                    .filter(token -> !token.isEmpty()) // filter out any blank tokens
-                   .map(Integer::valueOf) // covert string into integer
+                   .map(this::parseToken) // covert string into integer
                    .collect(Collectors.toList()); // bundle stream into list of integers
    }
+   
+   
+   /**
+    * Parses a single token to an Integer, handling the failure in a clearer  
+    * exception than the raw NumberFormatException 
+    */
+   private Integer parseToken(String token){
+      try{
+         return Integer.valueOf(token);
+      } catch (NumberFormatException e){
+         throw new IllegalArgumentException("Invalid number in input: '" + token + "'", e);
+      }
+   } 
    
    
    /**
@@ -112,15 +126,6 @@ public class NumberRangeSummarizerImpl implements NumberRangeSummarizer {
    }
    
    
-   public static void main(String[] args){
-       NumberRangeSummarizerImpl summarizer = new NumberRangeSummarizerImpl();
-       
-       String input = "1,3 , 6,7,8, 12, 13, 14,15,21 ,22, 23,24, 31";
-       
-       System.out.println(summarizer.summarizeCollection(summarizer.collect(input)));
-       
-   
-   }
 
 
 }
